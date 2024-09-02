@@ -1,0 +1,109 @@
+.search{
+    display: flex;
+    justify-content: center;
+    position: relative;
+  
+  }
+  
+  .search input{
+    border-radius:12px;
+    padding:5px 11px;
+    margin-top: 19px;
+    width: 80%;
+    border: none;
+    outline: none;
+    padding-left: 40px;
+  
+  }
+  
+
+  .sidebar .userChat img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+
+
+  }
+
+  .chats{
+    position: relative;
+    top:20px;
+  }
+  
+  
+  .userChat {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: black;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  
+  }
+  
+  .userChat:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .userChatInfo {
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+    margin-top: 3px;
+    position: relative;
+  }
+  
+  .email {
+    color: gray;
+    display: flex;
+  }
+  
+  
+  .userChatInfo .name{
+    font-size: 14px;
+    color: black;
+    text-transform: capitalize;
+  }
+  
+  .userChatInfo p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: gray;
+    font-size: 12px;
+    margin-left: 1px;
+  }
+  
+  .userChatInfo p .type {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  
+  .date {
+    position: absolute;
+    color: gray;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    right: 0px;
+    font-size: 10px;
+  }
+  
+  .alert {
+    position: absolute;
+    display: flex;
+    top: 15px;
+    right: 0px;
+    align-items: center;
+    justify-content: center;
+    background-color: #FF0000;
+    color: white;
+    height: 15px;
+    border-radius: 50%;
+    min-width: 15px;
+    font-size: 10px;
+  }
+  

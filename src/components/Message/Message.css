@@ -1,0 +1,62 @@
+.message {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+.messageInfo {
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 1;
+}
+
+.messageInfo span {
+  font-size: 10px;
+  color: gray;
+}
+
+.messageInfo img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.messageContent {
+  gap: 10px;
+  position: relative;
+}
+
+.messageContent p {
+  background-color: white;
+  padding: 10px;
+  border-radius: 0 10px 10px 10px;
+  max-width: 350px;
+  word-wrap: break-word;
+  font-size: 15px;
+}
+
+.messageContent img {
+  width: 300px;
+  max-height: 300px;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.message.owner {
+  flex-direction: row-reverse;
+}
+
+.message.owner p {
+  background-color: hsl(210, 100%, 60%);
+  color: white;
+  font-size: 15px;
+  border-radius: 0 10px 10px 10px;
+}
+
+.message-dropdown.not-owner {
+  left: 2px;
+}
