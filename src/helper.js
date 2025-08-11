@@ -1,31 +1,27 @@
-import moment from "moment"
+import moment from "moment";
 
 export const formateDate = (date) => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime()
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
 
-    
-    if(diff < 60000){
-     return "now"
-    }
+  if (diff < 60000) {
+    return "now";
+  }
 
-    if(diff < 3600000){
-     return `${Math.round(diff / 60000)} min ago`
-    }
+  if (diff < 3600000) {
+    return `${Math.round(diff / 60000)} min ago`;
+  }
 
-    if(diff < 86400000){
-     return moment(date).format("h:mm A")
-    }
+  if (diff < 86400000) {
+    return moment(date).format("h:mm A");
+  }
 
-    return moment(date).format("DD/MM/YY")
-}
-
-
-export const wrapEmojisInHtmlTag = (messageText) => {
-    const regexEmoji = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/gu; 
-    return messageText.replace(regexEmoji, (match) => {
-        return `<span style="font-size:1.5em;position:relative;top:1px">${match}</span>`;
-    });
+  return moment(date).format("DD/MM/YY");
 };
 
-
+export const wrapEmojisInHtmlTag = (messageText) => {
+  const regexEmoji = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/gu;
+  return messageText.replace(regexEmoji, (match) => {
+    return `<span style="font-size:1.5em;position:relative;top:1px">${match}</span>`;
+  });
+};
