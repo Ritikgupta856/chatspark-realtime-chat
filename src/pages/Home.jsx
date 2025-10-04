@@ -16,22 +16,14 @@ function Home() {
 
   return (
     <div className="flex w-full h-screen max-h-screen overflow-hidden">
-      <div
-        className={`${selectedChat ? 'hidden lg:flex' : 'flex'
-          } w-full lg:w-auto h-full`}
-      >
+
+      <div className={`${selectedChat ? 'hidden lg:block' : 'block'} w-full lg:w-96 h-full`}>
         <Chats />
       </div>
 
-
+     
       {selectedChat && (
-        <div className="flex lg:hidden w-full h-full">
-          <ChatPanel />
-        </div>
-      )}
-
-      {selectedChat && (
-        <div className="hidden lg:flex flex-grow h-full">
+        <div className="flex flex-grow h-full">
           <ChatPanel />
         </div>
       )}

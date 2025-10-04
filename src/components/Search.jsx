@@ -24,7 +24,6 @@ const Search = () => {
 
   const { currentUser } = useContext(AuthContext);
 
-  // 🔹 Real-time search effect
   useEffect(() => {
     if (!username.trim()) {
       setUser(null);
@@ -56,7 +55,7 @@ const Search = () => {
         console.error(error);
         setErr(true);
       }
-    }, 300); // debounce
+    }, 300); 
 
     return () => clearTimeout(delayDebounce);
   }, [username, currentUser.uid]);
