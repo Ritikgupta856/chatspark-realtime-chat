@@ -184,8 +184,8 @@ const Register = () => {
             </div>
           </div>
           <div className="space-y-2">
-            <CardTitle className="text-2xl font-bold">Create Your Account</CardTitle>
-            <CardDescription className="text-base">
+            <CardTitle className="text-xl lg:text-2xl font-bold">Create Your Account</CardTitle>
+            <CardDescription className="lg:text-base">
               Connect and chat with anyone, anywhere
             </CardDescription>
           </div>
@@ -193,8 +193,8 @@ const Register = () => {
 
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="displayName" className="text-sm font-medium">
+            <div className="space-y-3">
+              <Label htmlFor="displayName" className="lg:text-sm font-medium">
                 Display Name
               </Label>
               <div className="relative">
@@ -206,21 +206,21 @@ const Register = () => {
                   placeholder="Enter your display name"
                   value={formData.displayName}
                   onChange={handleChange}
-                  className={`pl-10 ${errors.displayName ? 'border-destructive' : ''}`}
+                  className={`pl-10 placeholder:text-sm ${errors.displayName ? 'border-destructive' : ''}`}
                   disabled={loading}
                   autoComplete="name"
                 />
               </div>
               {errors.displayName && (
-                <div className="flex items-center gap-2 text-sm text-destructive">
+                <div className="flex items-center gap-2 lg:text-sm text-destructive">
                   <AlertCircle className="w-4 h-4" />
                   {errors.displayName}
                 </div>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
+            <div className="space-y-3">
+              <Label htmlFor="email" className="lg:text-sm font-medium">
                 Email Address
               </Label>
               <div className="relative">
@@ -232,21 +232,21 @@ const Register = () => {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
+                  className={`pl-10 placeholder:text-sm ${errors.email ? 'border-destructive' : ''}`}
                   disabled={loading}
                   autoComplete="email"
                 />
               </div>
               {errors.email && (
-                <div className="flex items-center gap-2 text-sm text-destructive">
+                <div className="flex items-center gap-2 lg:text-sm text-destructive">
                   <AlertCircle className="w-4 h-4" />
                   {errors.email}
                 </div>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
+            <div className="space-y-3">
+              <Label htmlFor="password" className="lg:text-sm font-medium">
                 Password
               </Label>
               <div className="relative">
@@ -258,13 +258,13 @@ const Register = () => {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`pl-10 ${errors.password ? 'border-destructive' : ''}`}
+                  className={`pl-10 placeholder:text-sm ${errors.password ? 'border-destructive' : ''}`}
                   disabled={loading}
                   autoComplete="new-password"
                 />
               </div>
               {errors.password && (
-                <div className="flex items-center gap-2 text-sm text-destructive">
+                <div className="flex items-center gap-2 lg:text-sm text-destructive">
                   <AlertCircle className="w-4 h-4" />
                   {errors.password}
                 </div>

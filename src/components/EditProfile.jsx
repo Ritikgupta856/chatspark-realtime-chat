@@ -210,7 +210,7 @@ const EditProfile = ({ isOpen, onClose }) => {
           </div>
 
           <div className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-2 lg:text-sm ">
               <Label htmlFor="name">Display Name</Label>
               <Input
                 id="name"
@@ -219,10 +219,11 @@ const EditProfile = ({ isOpen, onClose }) => {
                 onKeyUp={onKeyUp}
                 onKeyDown={onKeyDown}
                 placeholder="Enter your name"
+        
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 lg:text-sm ">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"

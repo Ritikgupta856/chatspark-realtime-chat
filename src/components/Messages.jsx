@@ -3,7 +3,7 @@ import Message from "./Message";
 import { ChatContext } from "../context/ChatContext";
 import { db } from "../firebase";
 import { doc, onSnapshot } from "firebase/firestore";
-import { ScrollArea } from "@/components/ui/scroll-area"; // shadcn component
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 function Messages() {
   const [messages, setMessages] = useState([]);
@@ -24,7 +24,7 @@ function Messages() {
   }, [data.chatId]);
 
   return (
-    <ScrollArea className="bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100 px-6 py-3 h-[calc(100%-142px)] transition-colors duration-300">
+    <ScrollArea className="h-full bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100 px-6 py-3">
       <div className="flex flex-col gap-4">
         {messages.length > 0 ? (
           messages.map((m) => <Message message={m} key={m.id} onDelete={m} />)

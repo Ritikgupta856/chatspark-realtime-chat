@@ -15,7 +15,7 @@ export const AuthContextProvider = ({ children }) => {
       if (currentUser?.uid) {
         const userDocRef = doc(db, "users", currentUser.uid);
         const userDocSnap = await getDoc(userDocRef);
-        
+
         if (userDocSnap.exists()) {
           await updateDoc(userDocRef, {
             isOnline: false,
@@ -32,7 +32,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const authStateChanged = async (user) => {
     setIsloading(true);
-    
+
     if (!user) {
       await clear();
       return;

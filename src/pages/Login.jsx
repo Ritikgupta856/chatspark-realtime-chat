@@ -152,17 +152,17 @@ function Login() {
           </div>
           
           <div className="space-y-2">
-            <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-            <CardDescription className="text-base">
+            <CardTitle className="text-xl lg:text-2xl font-bold">Welcome Back</CardTitle>
+            <CardDescription className="lg:text-base">
               Sign in to your account to continue chatting
             </CardDescription>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
+            <div className="space-y-3">
+              <Label htmlFor="email" className="lg:text-sm font-medium">
                 Email Address
               </Label>
               <div className="relative">
@@ -178,21 +178,21 @@ function Login() {
                       setErrors((prev) => ({ ...prev, email: "" }));
                     }
                   }}
-                  className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
+                  className={`pl-10 placeholder:text-sm ${errors.email ? 'border-destructive' : ''}`}
                   disabled={isSubmitting}
                   autoComplete="email"
                 />
               </div>
               {errors.email && (
-                <div className="flex items-center gap-2 text-sm text-destructive">
+                <div className="flex items-center gap-2 lg:text-sm text-destructive">
                   <AlertCircle className="w-4 h-4" />
                   {errors.email}
                 </div>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
+            <div className="space-y-3">
+              <Label htmlFor="password" className="lg:text-sm font-medium">
                 Password
               </Label>
               <div className="relative">
@@ -208,7 +208,7 @@ function Login() {
                       setErrors((prev) => ({ ...prev, password: "" }));
                     }
                   }}
-                  className={`pl-10 pr-10 ${errors.password ? 'border-destructive' : ''}`}
+                  className={`pl-10 pr-10 placeholder:text-sm ${errors.password ? 'border-destructive' : ''}`}
                   disabled={isSubmitting}
                   autoComplete="current-password"
                 />
@@ -241,7 +241,7 @@ function Login() {
                 size="sm"
                 onClick={resetPassword}
                 disabled={isSubmitting}
-                className="text-sm hover:underline p-0 h-auto"
+                className="lg:text-sm hover:underline cursor-pointer p-0 h-auto"
               >
                 Forgot password?
               </Button>

@@ -6,9 +6,9 @@ import { MdDeleteForever } from "react-icons/md";
 import { RiImageAddFill } from "react-icons/ri";
 import EmojiPicker from "emoji-picker-react";
 import { IoSend } from "react-icons/io5";
+import ClickAwayListener from "react-click-away-listener";
 import {
   arrayUnion,
-  deleteField,
   doc,
   serverTimestamp,
   Timestamp,
@@ -17,12 +17,10 @@ import {
 import { db, storage } from "@/firebase";
 import { v4 as uuid } from "uuid";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import ClickAwayListener from "react-click-away-listener";
 
 // shadcn/ui components
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const ChatFooter = () => {
   const { currentUser } = useContext(AuthContext);
@@ -32,7 +30,7 @@ const ChatFooter = () => {
   const [attachment, setAttachment] = useState(null);
   const [attachmentPreview, setAttachmentPreview] = useState(null);
   const [emoji, setEmoji] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const isChatSelected = data?.chatId && data?.user?.uid;
 
@@ -62,7 +60,7 @@ const ChatFooter = () => {
 
     try {
       setIsUploading(true);
-      
+
       if (attachment) {
         const storageRef = ref(storage, uuid());
         const uploadTask = uploadBytesResumable(storageRef, attachment);
@@ -98,6 +96,7 @@ const ChatFooter = () => {
             setText("");
             setAttachment(null);
             setAttachmentPreview(null);
+            setIsUploading(false);
           }
         );
       } else {
@@ -136,7 +135,7 @@ const ChatFooter = () => {
       {/* Attachment preview */}
       {attachmentPreview && (
         <div
-          className="absolute bottom-16 sm:bottom-20 left-4 w-28 sm:w-32 bg-white rounded-xl shadow-md cursor-pointer z-20 flex flex-col items-center overflow-hidden"
+          className="absolute bottom-16 left-4 w-28 sm:w-32 bg-white rounded-xl shadow-md cursor-pointer z-20 flex flex-col items-center overflow-hidden"
           onClick={() => {
             setAttachment(null);
             setAttachmentPreview(null);
@@ -157,11 +156,7 @@ const ChatFooter = () => {
       />
       <label
         htmlFor="file"
-        className={`cursor-pointer transition ${
-          isChatSelected
-            ? "text-blue-500 hover:text-blue-600"
-            : "text-gray-300 cursor-not-allowed"
-        }`}
+        className="cursor-pointer text-gray-400 hover:text-gray-300 transition-colors"
       >
         <RiImageAddFill size={24} />
       </label>
@@ -180,53 +175,53 @@ const ChatFooter = () => {
           disabled={!isChatSelected}
           className="w-full rounded-full px-4 py-2 text-sm sm:text-base bg-white focus:ring-2 focus:ring-blue-400 shadow-sm"
         />
+        <div className="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 ">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full hover:bg-gray-200 transition-all duration-150"
+              disabled={!isChatSelected}
+              onClick={() => setEmoji((prev) => !prev)}
+            >
+              <BsEmojiSmile size={22} className="text-gray-500" />
+            </Button>
+
+            {emoji && (
+              <ClickAwayListener onClickAway={() => setEmoji(false)}>
+                <div className="absolute bottom-4 mb-2 right-[90px] w-72 z-50">
+                  {/* Add padding inside */}
+                  <div className="p-2">
+                    <EmojiPicker
+                      emojiStyle="google"
+                      autoFocus={false}
+                      theme="light"
+                      onEmojiClick={onEmojiClick}
+                    />
+                  </div>
+                </div>
+              </ClickAwayListener>
+            )}
+
+          </div>
+        </div>
       </div>
 
-      {/* Emoji Picker */}
-      <Popover open={emoji} onOpenChange={setEmoji}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full hover:bg-gray-200"
-            disabled={!isChatSelected}
-          >
-            <BsEmojiSmile size={22} className="text-gray-500" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent side="top" className="p-0 border-none shadow-none">
-          <ClickAwayListener onClickAway={() => setEmoji(false)}>
-            <div className="rounded-lg overflow-hidden">
-              <EmojiPicker
-                emojiStyle="google"
-                autoFocus={false}
-                theme="light"
-                onEmojiClick={onEmojiClick}
-              />
-            </div>
-          </ClickAwayListener>
-        </PopoverContent>
-      </Popover>
-
       {/* Send button */}
-       <div className="flex-shrink-0">
-            <Button
-              onClick={handleSend}
-              disabled={
-                !isChatSelected ||
-                (!text.trim() && !attachment) ||
-                isUploading
-              }
-              className="rounded-full w-10 h-10 sm:w-11 sm:h-11 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm"
-              size="icon"
-            >
-              {isUploading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <IoSend size={18} className="ml-0.5" />
-              )}
-            </Button>
-             </div>
+      <div className="flex-shrink-0">
+        <Button
+          onClick={handleSend}
+          disabled={!isChatSelected || (!text.trim() && !attachment) || isUploading}
+          className="rounded-full w-10 h-10 sm:w-11 sm:h-11 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+          size="icon"
+        >
+          {isUploading ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <IoSend size={18} className="ml-0.5" />
+          )}
+        </Button>
+      </div>
     </div>
   );
 };

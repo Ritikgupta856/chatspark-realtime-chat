@@ -26,7 +26,7 @@ function ChatHeader() {
 
   return (
     <div className="bg-white">
-      <div className="flex items-center gap-3 p-3">
+      <div className="flex items-center gap-2 lg:gap-3 p-3">
         <Button
           variant="ghost"
           size="icon"
@@ -39,7 +39,7 @@ function ChatHeader() {
         {/* Avatar with online dot below */}
         <div className="relative flex flex-col items-center">
           <Avatar className="h-10 w-10 lg:h-12 lg:w-12">
-            <AvatarImage src={user?.photoURL} alt="avatar" />
+            <AvatarImage src={user?.photoURL} alt="avatar" className="object-cover" />
             <AvatarFallback
               className="text-white lg:text-lg"
               style={{ backgroundColor: user?.color }}

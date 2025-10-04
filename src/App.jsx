@@ -33,32 +33,37 @@ function PublicRoute({ children }) {
 function AppContent() {
   return (
     <>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-          success: {
-            duration: 3000,
-            iconTheme: {
-              primary: '#10b981',
-              secondary: '#fff',
-            },
-          },
-          error: {
-            duration: 4000,
-            iconTheme: {
-              primary: '#ef4444',
-              secondary: '#fff',
-            },
-          },
-        }}
-      />
+    <Toaster
+  position="top-center"
+  reverseOrder={false}
+  gutter={8}
+  toastOptions={{
+    duration: 4000,
+    style: {
+      background: '#f9fafb', // light gray background
+      color: '#111827',      // dark text
+      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+      borderRadius: '8px',
+      padding: '12px 16px',
+    },
+    success: {
+      duration: 3000,
+      iconTheme: {
+        primary: '#10b981', // green
+        secondary: '#f9fafb', // light background
+      },
+    },
+    error: {
+      duration: 4000,
+      iconTheme: {
+        primary: '#ef4444', // red
+        secondary: '#f9fafb', // light background
+      },
+    },
+   
+  }}
+/>
+
       <Routes>
         <Route
           path="/"

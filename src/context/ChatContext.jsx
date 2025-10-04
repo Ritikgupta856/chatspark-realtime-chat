@@ -14,7 +14,6 @@ export const ChatContextProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(false);
-  const [imageViewer, setImageViewer] = useState(null);
 
   const chatReducer = (state, action) => {
     switch (action.type) {
@@ -48,8 +47,6 @@ export const ChatContextProvider = ({ children }) => {
         setUsers,
         selectedChat,
         setSelectedChat,
-        imageViewer,
-        setImageViewer,
       }}
     >
       {children}

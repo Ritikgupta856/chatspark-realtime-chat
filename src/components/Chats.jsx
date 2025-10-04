@@ -142,7 +142,7 @@ function Chats() {
               placeholder="Search conversations..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 bg-gray-50 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 placeholder:text-sm bg-gray-50 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>

@@ -121,3 +121,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .h-screen {
+    height: 100dvh !important;
+  }
+}

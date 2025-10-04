@@ -105,7 +105,7 @@ const AddUser = ({ isOpen, onClose }) => {
             userInfo: {
               uid: user.id,
               displayName: user.displayName,
-               photoURL: user.photoURL || null,
+              photoURL: user.photoURL || null,
             },
             date: serverTimestamp(),
             lastMessage: { text: "" },
@@ -155,17 +155,16 @@ const AddUser = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
-        <DialogHeader className="px-5 pt-5 pb-2">
-          <DialogTitle className="flex flex-col">
-            <span className="text-base">Add new chat</span>
-            <span className="text-sm font-normal text-muted-foreground mt-1">
-              Search by name to start a conversation
-            </span>
+      <DialogContent className="sm:max-w-md">
+
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            Add new chat
           </DialogTitle>
         </DialogHeader>
 
-        <div className="px-5 pb-5 space-y-4">
+
+        <div className="space-y-6 py-4">
           {/* Search Input */}
           <div className="relative">
             <Search
@@ -179,7 +178,7 @@ const AddUser = ({ isOpen, onClose }) => {
                 setSearchTerm(e.target.value);
                 handleSearch(e.target.value);
               }}
-              className="pl-10 h-10 rounded-md border-input focus-visible:ring-2 focus-visible:ring-primary/30"
+              className="pl-10 placeholder:text-sm h-10 rounded-md border-input focus-visible:ring-2 focus-visible:ring-primary/30"
               aria-label="Search users"
             />
           </div>
@@ -250,7 +249,7 @@ const AddUser = ({ isOpen, onClose }) => {
                   <UserPlus className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <p className="text-sm">Search for users to start chatting</p>
-              
+
               </div>
             )}
           </div>
