@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,14 +11,14 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { X, Camera, Save } from "lucide-react";
 import { toast } from "react-hot-toast"; // or your toast library
-import { 
-  ref, 
-  uploadBytesResumable, 
-  getDownloadURL 
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL
 } from "firebase/storage";
-import { 
-  doc, 
-  updateDoc 
+import {
+  doc,
+  updateDoc
 } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import { storage, db, auth } from "@/firebase";
@@ -116,7 +116,7 @@ const EditProfile = ({ isOpen, onClose }) => {
       } else if (type === "photo") {
         await updateProfile(authUser, { photoURL: value });
       }
-      
+
       if (type !== "photo") { // Don't show twice for photo uploads
         toast.success("Profile updated successfully");
       }
@@ -190,7 +190,8 @@ const EditProfile = ({ isOpen, onClose }) => {
             <div className="relative">
               <Avatar className="h-20 w-20">
                 <AvatarImage src={avatar || "/placeholder.svg"} alt={name} />
-                <AvatarFallback className="text-lg">
+                <AvatarFallback className="text-lg lg:text-xl text-white"
+                  style={{ backgroundColor: currentUser?.color }}>
                   {name?.charAt(0)?.toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>

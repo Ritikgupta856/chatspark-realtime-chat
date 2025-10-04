@@ -4,11 +4,7 @@ import {
   Timestamp,
   collection,
   doc,
-  getDoc,
   onSnapshot,
-  query,
-  updateDoc,
-  where,
 } from "firebase/firestore";
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -36,8 +32,6 @@ function Chats() {
     chats,
     setChats,
     setSelectedChat,
-    data,
-    // ❌ REMOVED: resetFooterStates (no longer needed - state is local to ChatFooter)
   } = useChatContext();
   const navigate = useNavigate();
   const { currentUser, signOut } = useContext(AuthContext);
@@ -59,13 +53,13 @@ function Chats() {
 
   // Fetch chats
   useEffect(() => {
-    if (!currentUser.uid) return;
-    const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) =>
-      setChats(doc.data())
-    );
+    if (!currentUser?.uid) return;
+    const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
+      const data = doc.data();
+      setChats(data || {});
+    });
     return unsub;
-  }, [currentUser.uid, setChats]);
-
+  }, [currentUser?.uid, setChats]);
 
   // Select chat
   const handleSelect = (u, selectedChatId) => {
@@ -104,7 +98,7 @@ function Chats() {
   };
 
   return (
-    <div className="flex flex-col w-full lg:w-92 h-screen border-r border-gray-200 bg-white">
+    <div className="flex flex-col w-full lg:w-96 h-full border-r border-gray-200 bg-white">
       {/* Header Section */}
       <div className="flex-shrink-0 px-4 md:px-6 py-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
@@ -115,6 +109,7 @@ function Chats() {
               size="icon"
               onClick={handleAddUser}
               className="h-9 w-9 cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200"
+              aria-label="Add new user"
             >
               <Plus className="h-5 w-5" />
             </Button>
@@ -123,6 +118,7 @@ function Chats() {
               size="icon"
               onClick={handleEditProfile}
               className="h-9 w-9 cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200"
+              aria-label="Edit profile"
             >
               <Settings className="h-5 w-5" />
             </Button>
@@ -131,6 +127,7 @@ function Chats() {
               size="icon"
               onClick={handleLogout}
               className="h-9 w-9 cursor-pointer text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-all duration-200"
+              aria-label="Logout"
             >
               <LogOut className="h-5 w-5" />
             </Button>
@@ -138,7 +135,7 @@ function Chats() {
         </div>
 
         {/* Search */}
-        <div className="mt-8">
+        <div className="mt-4">
           <div className="relative">
             <RiSearch2Line className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -191,12 +188,14 @@ function Chats() {
                           </AvatarFallback>
                         </Avatar>
                         {/* Online indicator */}
-                        <span
-                          className={cn(
-                            "absolute -bottom-0 right-1 h-3 w-3 rounded-full border-2 border-white",
-                            user.online ? "bg-green-500" : "bg-gray-400"
-                          )}
-                        />
+                        {user && (
+                          <span
+                            className={cn(
+                              "absolute -bottom-0 right-1 h-3 w-3 rounded-full border-2 border-white",
+                              user.isOnline ? "bg-green-500" : "bg-gray-400"
+                            )}
+                          />
+                        )}
                       </div>
 
                       <div className="flex-1 min-w-0">

@@ -5,6 +5,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { MdDeleteForever } from "react-icons/md";
 import { RiImageAddFill } from "react-icons/ri";
 import EmojiPicker from "emoji-picker-react";
+import { IoSend } from "react-icons/io5";
 import {
   arrayUnion,
   deleteField,
@@ -31,6 +32,7 @@ const ChatFooter = () => {
   const [attachment, setAttachment] = useState(null);
   const [attachmentPreview, setAttachmentPreview] = useState(null);
   const [emoji, setEmoji] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
   const isChatSelected = data?.chatId && data?.user?.uid;
 
@@ -59,6 +61,8 @@ const ChatFooter = () => {
     if (!isChatSelected) return;
 
     try {
+      setIsUploading(true);
+      
       if (attachment) {
         const storageRef = ref(storage, uuid());
         const uploadTask = uploadBytesResumable(storageRef, attachment);
@@ -114,13 +118,13 @@ const ChatFooter = () => {
           updateDoc(doc(db, "userChats", data.user.uid), {
             [data.chatId + ".lastMessage"]: { text: text.trim() },
             [data.chatId + ".date"]: serverTimestamp(),
-            [data.chatId + ".chatDeleted"]: deleteField(),
           }),
         ]);
 
         setText("");
         setAttachment(null);
         setAttachmentPreview(null);
+        setIsUploading(false);
       }
     } catch (error) {
       console.error(error);
@@ -205,13 +209,24 @@ const ChatFooter = () => {
       </Popover>
 
       {/* Send button */}
-      <Button
-        onClick={handleSend}
-        className="rounded-full px-5 sm:px-6 bg-blue-500 hover:bg-blue-600 text-white font-medium"
-        disabled={!isChatSelected || (!text.trim() && !attachment)}
-      >
-        Send
-      </Button>
+       <div className="flex-shrink-0">
+            <Button
+              onClick={handleSend}
+              disabled={
+                !isChatSelected ||
+                (!text.trim() && !attachment) ||
+                isUploading
+              }
+              className="rounded-full w-10 h-10 sm:w-11 sm:h-11 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm"
+              size="icon"
+            >
+              {isUploading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <IoSend size={18} className="ml-0.5" />
+              )}
+            </Button>
+             </div>
     </div>
   );
 };

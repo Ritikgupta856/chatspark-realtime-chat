@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, LogIn, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthContext } from "@/context/AuthContext";
+import Loader from "@/components/Loader";
 
 function Login() {
   const navigate = useNavigate();
@@ -33,9 +34,9 @@ function Login() {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!email) {
+    if (!email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       newErrors.email = "Please enter a valid email";
     }
     
@@ -60,17 +61,34 @@ function Login() {
     setIsSubmitting(true);
     
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email.trim(), password);
       toast.success("Welcome back!");
+      // Navigation will be handled by useEffect when currentUser updates
     } catch (err) {
-      let errorMessage = "Invalid credentials";
+      console.error("Login error:", err);
+      let errorMessage = "Invalid credentials. Please try again.";
       
-      if (err.code === "auth/user-not-found") {
-        errorMessage = "No account found with this email";
-      } else if (err.code === "auth/wrong-password") {
-        errorMessage = "Incorrect password";
-      } else if (err.code === "auth/too-many-requests") {
-        errorMessage = "Too many failed attempts. Please try again later";
+      switch (err.code) {
+        case "auth/user-not-found":
+          errorMessage = "No account found with this email";
+          break;
+        case "auth/wrong-password":
+          errorMessage = "Incorrect password";
+          break;
+        case "auth/invalid-credential":
+          errorMessage = "Invalid email or password";
+          break;
+        case "auth/user-disabled":
+          errorMessage = "This account has been disabled";
+          break;
+        case "auth/too-many-requests":
+          errorMessage = "Too many failed attempts. Please try again later";
+          break;
+        case "auth/network-request-failed":
+          errorMessage = "Network error. Please check your connection";
+          break;
+        default:
+          errorMessage = "Failed to sign in. Please try again";
       }
       
       toast.error(errorMessage);
@@ -80,36 +98,47 @@ function Login() {
   };
 
   const resetPassword = async () => {
-    if (!email) {
+    if (!email.trim()) {
       toast.error("Please enter your email address first");
       return;
     }
     
-    if (!/\S+@\S+\.\S+/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       toast.error("Please enter a valid email address");
       return;
     }
 
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email.trim());
       toast.success("Password reset link sent to your email");
     } catch (error) {
-      let errorMessage = "Something went wrong";
+      console.error("Password reset error:", error);
+      let errorMessage = "Failed to send reset email";
       
-      if (error.code === "auth/user-not-found") {
-        errorMessage = "No account found with this email";
+      switch (error.code) {
+        case "auth/user-not-found":
+          errorMessage = "No account found with this email";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Invalid email address";
+          break;
+        case "auth/too-many-requests":
+          errorMessage = "Too many requests. Please try again later";
+          break;
+        default:
+          errorMessage = "Something went wrong. Please try again";
       }
       
       toast.error(errorMessage);
     }
   };
 
-  if (isloading || (!isloading && currentUser)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
+  if (isloading) {
+    return <Loader />;
+  }
+
+  if (!isloading && currentUser) {
+    return <Loader />;
   }
 
   return (
@@ -143,9 +172,15 @@ function Login() {
                   type="email"
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) {
+                      setErrors((prev) => ({ ...prev, email: "" }));
+                    }
+                  }}
                   className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
                   disabled={isSubmitting}
+                  autoComplete="email"
                 />
               </div>
               {errors.email && (
@@ -167,15 +202,22 @@ function Login() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) {
+                      setErrors((prev) => ({ ...prev, password: "" }));
+                    }
+                  }}
                   className={`pl-10 pr-10 ${errors.password ? 'border-destructive' : ''}`}
                   disabled={isSubmitting}
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   disabled={isSubmitting}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -205,8 +247,8 @@ function Login() {
               </Button>
             </div>
 
-           <Button 
-              onClick={handleSubmit}
+            <Button 
+              type="submit"
               className="w-full bg-gray-900 hover:bg-gray-800 text-white" 
               disabled={isSubmitting}
               size="lg"

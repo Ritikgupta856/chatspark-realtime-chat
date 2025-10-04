@@ -8,14 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const Message = ({ message }) => {
   const { currentUser } = useContext(AuthContext);
-  const { setImageViewer, deleteMessage } = useContext(ChatContext);
+  const { setImageViewer } = useContext(ChatContext);
   const self = message?.senderId === currentUser?.uid;
-
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this message?")) {
-      deleteMessage(message.id);
-    }
-  };
 
   const ref = useRef();
 

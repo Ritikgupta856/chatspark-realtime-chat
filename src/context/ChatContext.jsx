@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useReducer, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
 
 export const ChatContext = createContext();
 
@@ -17,30 +15,6 @@ export const ChatContextProvider = ({ children }) => {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(false);
   const [imageViewer, setImageViewer] = useState(null);
-
-  const deleteMessage = async (messageToDelete) => {
-    if (!state.chatId) return;
-    
-    try {
-      const chatRef = doc(db, "chats", state.chatId);
-      const chatDoc = await getDoc(chatRef);
-      
-      if (chatDoc.exists()) {
-        const messages = chatDoc.data().messages || [];
-        const updatedMessages = messages.filter(msg => 
-          msg.date.seconds !== messageToDelete.date.seconds || 
-          msg.senderId !== messageToDelete.senderId ||
-          msg.text !== messageToDelete.text
-        );
-        
-        await updateDoc(chatRef, {
-          messages: updatedMessages
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting message:", error);
-    }
-  };
 
   const chatReducer = (state, action) => {
     switch (action.type) {
@@ -74,7 +48,6 @@ export const ChatContextProvider = ({ children }) => {
         setUsers,
         selectedChat,
         setSelectedChat,
-        deleteMessage,
         imageViewer,
         setImageViewer,
       }}

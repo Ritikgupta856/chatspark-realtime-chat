@@ -105,7 +105,7 @@ const AddUser = ({ isOpen, onClose }) => {
             userInfo: {
               uid: user.id,
               displayName: user.displayName,
-              photoURL: user.photoURL,
+               photoURL: user.photoURL || null,
             },
             date: serverTimestamp(),
             lastMessage: { text: "" },
@@ -124,7 +124,7 @@ const AddUser = ({ isOpen, onClose }) => {
             userInfo: {
               uid: currentUser.uid,
               displayName: currentUser.displayName,
-              photoURL: currentUser.photoURL,
+              photoURL: currentUser.photoURL || null,
             },
             date: serverTimestamp(),
             lastMessage: { text: "" },

@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "@/firebase";
@@ -9,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { UserPlus, Mail, Lock, AlertCircle } from "lucide-react";
+import { UserPlus, Mail, Lock, AlertCircle, User } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext";
 import Loader from "../components/Loader";
@@ -48,29 +47,43 @@ const Register = () => {
     if (!isloading && currentUser) {
       navigate("/");
     }
-  }, [currentUser]);
-
-  const colorIndex = Math.floor(Math.random() * profileColors.length);
+  }, [currentUser, isloading, navigate]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.displayName) {
+    
+    if (!formData.displayName.trim()) {
       newErrors.displayName = "Display name is required";
+    } else if (formData.displayName.trim().length < 2) {
+      newErrors.displayName = "Display name must be at least 2 characters";
+    } else if (formData.displayName.trim().length > 50) {
+      newErrors.displayName = "Display name must be less than 50 characters";
     }
-    if (!formData.email) {
+    
+    if (!formData.email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       newErrors.email = "Please enter a valid email";
     }
+    
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
+    } else if (formData.password.length > 128) {
+      newErrors.password = "Password must be less than 128 characters";
     }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -78,30 +91,90 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
-    if (!validateForm()) return;
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     const { displayName, email, password } = formData;
+    const colorIndex = Math.floor(Math.random() * profileColors.length);
+
     try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(res.user, { displayName });
+      // Create user account
+      const res = await createUserWithEmailAndPassword(
+        auth, 
+        email.trim(), 
+        password
+      );
+
+      // Update profile with display name
+      await updateProfile(res.user, { 
+        displayName: displayName.trim() 
+      });
+
+      // Create user document in Firestore
       await setDoc(doc(db, "users", res.user.uid), {
         uid: res.user.uid,
-        displayName,
-        email,
+        displayName: displayName.trim(),
+        email: email.trim(),
         color: profileColors[colorIndex],
+        isOnline: false,
+        createdAt: new Date().toISOString(),
       });
+
+      // Create empty userChats document
       await setDoc(doc(db, "userChats", res.user.uid), {});
-      toast.success("Account created successfully");
-      setLoading(false);
+
+      toast.success("Success!");
+      
+      // Sign out the user after registration
+      await auth.signOut();
+      
+      // Navigate to login page
+      navigate("/login");
     } catch (err) {
+      console.error("Registration error:", err);
+      
+      let errorMessage = "Failed to create account. Please try again.";
+      
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          errorMessage = "This email is already registered. Please login instead.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Invalid email address";
+          break;
+        case "auth/operation-not-allowed":
+          errorMessage = "Email/password accounts are not enabled";
+          break;
+        case "auth/weak-password":
+          errorMessage = "Password is too weak. Please use a stronger password";
+          break;
+        case "auth/network-request-failed":
+          errorMessage = "Network error. Please check your connection";
+          break;
+        default:
+          if (err.message) {
+            errorMessage = err.message;
+          }
+      }
+      
+      toast.error(errorMessage);
+    } finally {
       setLoading(false);
-      toast.error("Something went wrong");
     }
   };
 
-  return isloading || (!isloading && currentUser) ? (
-    <Loader />
-  ) : (
+  if (isloading) {
+    return <Loader />;
+  }
+
+  if (!isloading && currentUser) {
+    return <Loader />;
+  }
+
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-6 text-center">
@@ -112,24 +185,30 @@ const Register = () => {
           </div>
           <div className="space-y-2">
             <CardTitle className="text-2xl font-bold">Create Your Account</CardTitle>
-            <CardDescription className="text-base">Connect and chat with anyone, anywhere</CardDescription>
+            <CardDescription className="text-base">
+              Connect and chat with anyone, anywhere
+            </CardDescription>
           </div>
         </CardHeader>
+
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="displayName" className="text-sm font-medium">Display Name</Label>
+              <Label htmlFor="displayName" className="text-sm font-medium">
+                Display Name
+              </Label>
               <div className="relative">
-                <UserPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   id="displayName"
                   name="displayName"
                   type="text"
-                  placeholder="Display Name"
+                  placeholder="Enter your display name"
                   value={formData.displayName}
                   onChange={handleChange}
                   className={`pl-10 ${errors.displayName ? 'border-destructive' : ''}`}
                   disabled={loading}
+                  autoComplete="name"
                 />
               </div>
               {errors.displayName && (
@@ -139,19 +218,23 @@ const Register = () => {
                 </div>
               )}
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email Address
+              </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="Email Id"
+                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                   className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
                   disabled={loading}
+                  autoComplete="email"
                 />
               </div>
               {errors.email && (
@@ -161,19 +244,23 @@ const Register = () => {
                 </div>
               )}
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+              <Label htmlFor="password" className="text-sm font-medium">
+                Password
+              </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="Enter Password"
+                  placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
                   className={`pl-10 ${errors.password ? 'border-destructive' : ''}`}
                   disabled={loading}
+                  autoComplete="new-password"
                 />
               </div>
               {errors.password && (
@@ -183,6 +270,7 @@ const Register = () => {
                 </div>
               )}
             </div>
+
             <Button
               type="submit"
               className="w-full bg-gray-900 hover:bg-gray-800 text-white"
@@ -192,19 +280,26 @@ const Register = () => {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Signing up...
+                  Creating account...
                 </>
               ) : (
-                <>Sign Up</>
+                <>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Sign Up
+                </>
               )}
             </Button>
           </form>
         </CardContent>
+
         <CardFooter className="flex flex-col space-y-4">
           <Separator />
           <p className="text-sm text-center text-muted-foreground">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-primary hover:underline transition-colors">
+            <Link 
+              to="/login" 
+              className="font-medium text-primary hover:underline transition-colors"
+            >
               Login
             </Link>
           </p>
