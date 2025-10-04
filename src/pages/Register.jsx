@@ -15,21 +15,21 @@ import { AuthContext } from "../context/AuthContext";
 import Loader from "../components/Loader";
 
 const profileColors = [
-  "#8C1AAE", // Deep purple
-  "#00BFFF", // Bright blue
-  "#FF6B6B", // Vibrant red
-  "#FFA500", // Orange
-  "#00C853", // Bright green
-  "#9575CD", // Light purple
-  "#FF9100", // Amber
-  "#00B8D4", // Teal
-  "#F48FB1", // Pink
-  "#7CB342", // Light green
-  "#E91E63", // Magenta
-  "#0D47A1", // Navy blue
-  "#FFD600", // Yellow
-  "#4CAF50", // Green
-  "#673AB7", // Deep purple
+  "#FF3366", // Vibrant Pink
+  "#4A90E2", // Ocean Blue
+  "#50E3C2", // Mint Green
+  "#F39C12", // Golden Orange
+  "#9B59B6", // Royal Purple
+  "#2ECC71", // Emerald Green
+  "#E74C3C", // Crimson Red
+  "#1ABC9C", // Turquoise
+  "#5856D6", // Indigo
+  "#FF9500", // Warm Orange
+  "#34495E", // Deep Navy
+  "#7F8C8D", // Cool Gray
+  "#16A085", // Dark Teal
+  "#8E44AD", // Deep Purple
+  "#3498DB"  // Sky Blue
 ];
 
 const Register = () => {

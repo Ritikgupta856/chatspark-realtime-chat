@@ -1,37 +1,46 @@
-import {
-  createContext,
-  useContext,
-  useReducer,
-  useState,
-} from "react";
+import React, { createContext, useContext, useReducer, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import React from 'react';
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 export const ChatContext = createContext();
 
-
 export const ChatContextProvider = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
+
   const INITIAL_STATE = {
     chatId: null,
     user: {},
   };
 
-const [users, setUsers] = useState([]);
-const [chats, setChats] = useState([]);
-const [selectedChat, setSelectedChat] = useState(false);
-const [text, setText] = useState("");
-const [attachment, setAttachment] = useState(null);
-const [attachmentPreview, setAttachmentPreview] = useState(null);
-const [imageViewer, setImageViewer] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [chats, setChats] = useState([]);
+  const [selectedChat, setSelectedChat] = useState(false);
+  const [imageViewer, setImageViewer] = useState(null);
 
-const resetFooterStates = () => {
-  setText("");
-  setAttachment(null);
-  setAttachmentPreview(null);
-  setImageViewer(null);
-};
-
+  const deleteMessage = async (messageToDelete) => {
+    if (!state.chatId) return;
+    
+    try {
+      const chatRef = doc(db, "chats", state.chatId);
+      const chatDoc = await getDoc(chatRef);
+      
+      if (chatDoc.exists()) {
+        const messages = chatDoc.data().messages || [];
+        const updatedMessages = messages.filter(msg => 
+          msg.date.seconds !== messageToDelete.date.seconds || 
+          msg.senderId !== messageToDelete.senderId ||
+          msg.text !== messageToDelete.text
+        );
+        
+        await updateDoc(chatRef, {
+          messages: updatedMessages
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
 
   const chatReducer = (state, action) => {
     switch (action.type) {
@@ -44,8 +53,8 @@ const resetFooterStates = () => {
               : action.payload.uid + currentUser.uid,
         };
 
-       case "EMPTY" : 
-             return INITIAL_STATE ;
+      case "EMPTY":
+        return INITIAL_STATE;
 
       default:
         return state;
@@ -57,25 +66,22 @@ const resetFooterStates = () => {
   return (
     <ChatContext.Provider
       value={{
-        chats, 
-        setChats,
         data: state,
         dispatch,
-        users,setUsers,
+        chats,
+        setChats,
+        users,
+        setUsers,
         selectedChat,
         setSelectedChat,
-        text,
-        setText,
-        attachment,
-        setAttachment,
-        attachmentPreview,
-        setAttachmentPreview,
+        deleteMessage,
         imageViewer,
         setImageViewer,
-        resetFooterStates
-      }}>
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );
-}
-export const useChatContext = () => useContext(ChatContext)
+};
+
+export const useChatContext = () => useContext(ChatContext);

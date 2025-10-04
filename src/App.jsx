@@ -6,7 +6,6 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 
 import Home from "./pages/Home";
-import ChatPage from "./pages/ChatPage";
 
 import { AuthContext, AuthContextProvider } from "./context/AuthContext";
 import { ChatContextProvider } from "./context/ChatContext";
@@ -31,14 +30,6 @@ function AppContent() {
         />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route
-          path="chat/:chatId"
-          element={
-            <ProtectedRoute>
-              <ChatPage />
-            </ProtectedRoute>
-          }
-        />
       </Routes>
     </>
   );

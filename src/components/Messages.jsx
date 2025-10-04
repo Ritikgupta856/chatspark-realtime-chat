@@ -24,12 +24,10 @@ function Messages() {
   }, [data.chatId]);
 
   return (
-    <ScrollArea className="bg-[#f4f3f8] px-4 py-3 h-[calc(100%-130px)] rounded-b-lg">
+    <ScrollArea className="bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100 px-6 py-3 h-[calc(100%-142px)] transition-colors duration-300">
       <div className="flex flex-col gap-4">
         {messages.length > 0 ? (
-          messages.map((m) => (
-            <Message message={m} key={m.id} onDelete={m} />
-          ))
+          messages.map((m) => <Message message={m} key={m.id} onDelete={m} />)
         ) : (
           <div className="text-center text-sm text-gray-400 mt-10">
             No messages yet. Start the conversation!

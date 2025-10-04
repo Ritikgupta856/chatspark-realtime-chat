@@ -1,10 +1,10 @@
+import { Loader2 } from "lucide-react";
 import React from "react";
-import { ClipLoader } from "react-spinners";
 
 const Loader = () => {
   return (
-    <div className="h-screen flex justify-center items-center">
-      <ClipLoader size={50} color="#9d97ab" />
+    <div className="h-screen flex justify-center items-center animate-spin">
+      <Loader2 size={50} color="#9d97ab" />
     </div>
   );
 };

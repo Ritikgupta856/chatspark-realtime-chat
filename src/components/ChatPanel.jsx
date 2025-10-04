@@ -7,7 +7,7 @@ import ChatFooter from "./ChatFooter";
 
 const ChatPanel = () => {
   return (
-    <div className="flex-grow flex flex-col bg-[#f4f3f8] relative">
+    <div className="flex-grow flex flex-col relative">
       <ChatHeader />
       <Messages />
       <ChatFooter />
