@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
+import { debounce } from "lodash-es";
 import {
   Dialog,
   DialogContent,
@@ -24,16 +25,15 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { AuthContext } from "@/context/AuthContext";
-import { ChatContext } from "@/context/ChatContext";
 
 const SkeletonRow = () => (
   <div className="flex items-center gap-3 p-3 rounded-lg border bg-white/50">
     <div className="h-9 w-9 rounded-full bg-gray-200 animate-pulse" />
-    <div className="flex-1 space-y-2">
-      <div className="h-3 w-40 bg-gray-200 rounded animate-pulse" />
-      <div className="h-3 w-24 bg-gray-200 rounded animate-pulse" />
+    <div className="flex-1 space-y-2 min-w-0">
+      <div className="h-3 w-40 max-w-full bg-gray-200 rounded animate-pulse" />
+      <div className="h-3 w-24 max-w-full bg-gray-200 rounded animate-pulse" />
     </div>
-    <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
+    <div className="h-8 w-20 bg-gray-200 rounded animate-pulse shrink-0" />
   </div>
 );
 
@@ -43,6 +43,22 @@ const AddUser = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
+
+  const debouncedSearch = useCallback(
+    debounce(async (term) => {
+      if (!term.trim()) {
+        setSearchResults([]);
+        return;
+      }
+      await handleSearch(term);
+    }, 300),
+    [] 
+  );
+
+  useEffect(() => {
+    debouncedSearch(searchTerm);
+    return () => debouncedSearch.cancel();
+  }, [searchTerm, debouncedSearch]);
 
   const handleSearch = async (term) => {
     if (!term.trim()) {
@@ -89,45 +105,69 @@ const AddUser = ({ isOpen, onClose }) => {
       const chatDoc = await getDoc(chatRef);
 
       if (!chatDoc.exists()) {
+    
         await setDoc(chatRef, { messages: [] });
 
         const currentUserChatRef = doc(db, "userChats", currentUser.uid);
         const currentUserChatDoc = await getDoc(currentUserChatRef);
-        const currentUserChatData = currentUserChatDoc.exists()
-          ? currentUserChatDoc.data()
-          : {};
 
-        await updateDoc(currentUserChatRef, {
-          ...currentUserChatData,
-          [combinedId]: {
-            userInfo: {
-              uid: user.id,
-              displayName: user.displayName,
-              photoURL: user.photoURL || null,
+        if (currentUserChatDoc.exists()) {
+          await updateDoc(currentUserChatRef, {
+            [combinedId]: {
+              userInfo: {
+                uid: user.id,
+                displayName: user.displayName,
+                photoURL: user.photoURL || null,
+              },
+              date: serverTimestamp(),
+              lastMessage: { text: "" },
             },
-            date: serverTimestamp(),
-            lastMessage: { text: "" },
-          },
-        });
+          });
+        } else {
+        
+          await setDoc(currentUserChatRef, {
+            [combinedId]: {
+              userInfo: {
+                uid: user.id,
+                displayName: user.displayName,
+                photoURL: user.photoURL || null,
+              },
+              date: serverTimestamp(),
+              lastMessage: { text: "" },
+            },
+          });
+        }
 
+  
         const otherUserChatRef = doc(db, "userChats", user.id);
         const otherUserChatDoc = await getDoc(otherUserChatRef);
-        const otherUserChatData = otherUserChatDoc.exists()
-          ? otherUserChatDoc.data()
-          : {};
 
-        await updateDoc(otherUserChatRef, {
-          ...otherUserChatData,
-          [combinedId]: {
-            userInfo: {
-              uid: currentUser.uid,
-              displayName: currentUser.displayName,
-              photoURL: currentUser.photoURL || null,
+        if (otherUserChatDoc.exists()) {
+          await updateDoc(otherUserChatRef, {
+            [combinedId]: {
+              userInfo: {
+                uid: currentUser.uid,
+                displayName: currentUser.displayName,
+                photoURL: currentUser.photoURL || null,
+              },
+              date: serverTimestamp(),
+              lastMessage: { text: "" },
             },
-            date: serverTimestamp(),
-            lastMessage: { text: "" },
-          },
-        });
+          });
+        } else {
+        
+          await setDoc(otherUserChatRef, {
+            [combinedId]: {
+              userInfo: {
+                uid: currentUser.uid,
+                displayName: currentUser.displayName,
+                photoURL: currentUser.photoURL || null,
+              },
+              date: serverTimestamp(),
+              lastMessage: { text: "" },
+            },
+          });
+        }
 
         toast.success(`Chat created with ${user.displayName}`);
       } else {
@@ -153,7 +193,7 @@ const AddUser = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-w-[calc(100vw-2rem)]">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             Add new chat
@@ -169,10 +209,7 @@ const AddUser = ({ isOpen, onClose }) => {
             <Input
               placeholder="Search by name..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                handleSearch(e.target.value);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 placeholder:text-sm h-10 rounded-md border-input focus-visible:ring-2 focus-visible:ring-primary/30"
               aria-label="Search users"
             />
@@ -194,10 +231,11 @@ const AddUser = ({ isOpen, onClose }) => {
                       key={user.id}
                       className="group flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/40 transition-colors"
                     >
-                      <Avatar className="h-9 w-9 ring-1 ring-border">
+                      <Avatar className="h-9 w-9 ring-1 ring-border shrink-0">
                         <AvatarImage
                           src={user.photoURL}
                           alt={user.displayName}
+                          className="object-cover"
                         />
                         <AvatarFallback
                           className="text-white"
@@ -207,12 +245,12 @@ const AddUser = ({ isOpen, onClose }) => {
                         </AvatarFallback>
                       </Avatar>
 
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <p className="font-medium truncate break-all">
                           {user.displayName}
                         </p>
                         {user.email && (
-                          <p className="text-sm text-muted-foreground truncate">
+                          <p className="text-sm text-muted-foreground truncate break-all">
                             {user.email}
                           </p>
                         )}
@@ -222,7 +260,7 @@ const AddUser = ({ isOpen, onClose }) => {
                         size="sm"
                         onClick={() => handleCreateChat(user)}
                         disabled={creating}
-                        className="shrink-0 transition-all group-hover:translate-x-0.5"
+                        className="shrink-0 transition-all group-hover:translate-x-0.5 min-w-[4.5rem]"
                         aria-label={`Add ${user.displayName}`}
                       >
                         <UserPlus className="h-4 w-4 mr-1 opacity-80" />
@@ -244,7 +282,7 @@ const AddUser = ({ isOpen, onClose }) => {
                 <div className="h-10 w-10 rounded-full grid place-items-center bg-muted mb-2">
                   <UserPlus className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <p className="text-sm">Search for users to start chatting</p>
+                <p className="text-sm text-center px-4">Search for users to start chatting</p>
               </div>
             )}
           </div>

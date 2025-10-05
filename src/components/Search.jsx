@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
+import { debounce } from "lodash-es";
 import {
   collection,
   query,
@@ -24,41 +25,49 @@ const Search = () => {
 
   const { currentUser } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (!username.trim()) {
-      setUser(null);
+  const searchUsers = useCallback(async (searchTerm) => {
+    try {
       setErr(false);
-      return;
-    }
+      const q = query(
+        collection(db, "users"),
+        where("displayName", ">=", searchTerm),
+        where("displayName", "<=", searchTerm + "\uf8ff")
+      );
 
-    const delayDebounce = setTimeout(async () => {
-      try {
-        setErr(false);
-        const q = query(
-          collection(db, "users"),
-          where("displayName", ">=", username),
-          where("displayName", "<=", username + "\uf8ff")
-        );
-
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-          setErr(true);
-          setUser(null);
-        } else {
-          querySnapshot.forEach((doc) => {
-            if (doc.id !== currentUser.uid) {
-              setUser(doc.data());
-            }
-          });
-        }
-      } catch (error) {
-        console.error(error);
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
         setErr(true);
+        setUser(null);
+      } else {
+        querySnapshot.forEach((doc) => {
+          if (doc.id !== currentUser.uid) {
+            setUser(doc.data());
+          }
+        });
       }
-    }, 300); 
+    } catch (error) {
+      console.error(error);
+      setErr(true);
+    }
+  }, [currentUser.uid]);
 
-    return () => clearTimeout(delayDebounce);
-  }, [username, currentUser.uid]);
+
+  const debouncedSearch = useCallback(
+    debounce(async (term) => {
+      if (!term.trim()) {
+        setUser(null);
+        setErr(false);
+        return;
+      }
+      await searchUsers(term);
+    }, 300),
+    [searchUsers]
+  );
+
+  useEffect(() => {
+    debouncedSearch(username);
+    return () => debouncedSearch.cancel();
+  }, [username, debouncedSearch]);
 
   const handleSelect = async () => {
     const combinedId =
