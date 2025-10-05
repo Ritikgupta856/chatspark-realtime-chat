@@ -40,8 +40,8 @@ function AppContent() {
         toastOptions={{
           duration: 4000,
           style: {
-            background: "#f9fafb", // light gray background
-            color: "#111827", // dark text
+            background: "#f9fafb",
+            color: "#111827",
             boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
             borderRadius: "8px",
             padding: "12px 16px",
@@ -49,15 +49,15 @@ function AppContent() {
           success: {
             duration: 3000,
             iconTheme: {
-              primary: "#10b981", // green
-              secondary: "#f9fafb", // light background
+              primary: "#10b981",
+              secondary: "#f9fafb",
             },
           },
           error: {
             duration: 4000,
             iconTheme: {
-              primary: "#ef4444", // red
-              secondary: "#f9fafb", // light background
+              primary: "#ef4444",
+              secondary: "#f9fafb",
             },
           },
         }}

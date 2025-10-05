@@ -18,14 +18,12 @@ import { db, storage } from "@/firebase";
 import { v4 as uuid } from "uuid";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
-// shadcn/ui components
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const ChatFooter = () => {
   const { currentUser } = useContext(AuthContext);
   const { data } = useChatContext();
-
   const [text, setText] = useState("");
   const [attachment, setAttachment] = useState(null);
   const [attachmentPreview, setAttachmentPreview] = useState(null);
@@ -65,40 +63,35 @@ const ChatFooter = () => {
         const storageRef = ref(storage, uuid());
         const uploadTask = uploadBytesResumable(storageRef, attachment);
 
-        uploadTask.on(
-          "state_changed",
-          null,
-          console.error,
-          async () => {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            await updateDoc(doc(db, "chats", data.chatId), {
-              messages: arrayUnion({
-                id: uuid(),
-                text: text.trim(),
-                senderId: currentUser.uid,
-                date: Timestamp.now(),
-                img: downloadURL,
-              }),
-            });
+        uploadTask.on("state_changed", null, console.error, async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          await updateDoc(doc(db, "chats", data.chatId), {
+            messages: arrayUnion({
+              id: uuid(),
+              text: text.trim(),
+              senderId: currentUser.uid,
+              date: Timestamp.now(),
+              img: downloadURL,
+            }),
+          });
 
-            const lastMessage = { img: downloadURL };
-            await Promise.all([
-              updateDoc(doc(db, "userChats", currentUser.uid), {
-                [data.chatId + ".lastMessage"]: lastMessage,
-                [data.chatId + ".date"]: serverTimestamp(),
-              }),
-              updateDoc(doc(db, "userChats", data.user.uid), {
-                [data.chatId + ".lastMessage"]: lastMessage,
-                [data.chatId + ".date"]: serverTimestamp(),
-              }),
-            ]);
+          const lastMessage = { img: downloadURL };
+          await Promise.all([
+            updateDoc(doc(db, "userChats", currentUser.uid), {
+              [data.chatId + ".lastMessage"]: lastMessage,
+              [data.chatId + ".date"]: serverTimestamp(),
+            }),
+            updateDoc(doc(db, "userChats", data.user.uid), {
+              [data.chatId + ".lastMessage"]: lastMessage,
+              [data.chatId + ".date"]: serverTimestamp(),
+            }),
+          ]);
 
-            setText("");
-            setAttachment(null);
-            setAttachmentPreview(null);
-            setIsUploading(false);
-          }
-        );
+          setText("");
+          setAttachment(null);
+          setAttachmentPreview(null);
+          setIsUploading(false);
+        });
       } else {
         await updateDoc(doc(db, "chats", data.chatId), {
           messages: arrayUnion({
@@ -132,7 +125,6 @@ const ChatFooter = () => {
 
   return (
     <div className="p-3 sm:p-4 border-t bg-gradient-to-r from-gray-50 to-gray-100 flex items-center gap-2 sm:gap-3 relative w-full">
-      {/* Attachment preview */}
       {attachmentPreview && (
         <div
           className="absolute bottom-16 left-4 w-28 sm:w-32 bg-white rounded-xl shadow-md cursor-pointer z-20 flex flex-col items-center overflow-hidden"
@@ -141,12 +133,15 @@ const ChatFooter = () => {
             setAttachmentPreview(null);
           }}
         >
-          <img src={attachmentPreview} alt="preview" className="w-full h-auto" />
+          <img
+            src={attachmentPreview}
+            alt="preview"
+            className="w-full h-auto"
+          />
           <MdDeleteForever className="text-red-500 my-2" size={20} />
         </div>
       )}
 
-      {/* File upload */}
       <Input
         type="file"
         id="file"
@@ -161,7 +156,6 @@ const ChatFooter = () => {
         <RiImageAddFill size={24} />
       </label>
 
-      {/* Message input */}
       <div className="flex-1 relative">
         <Input
           placeholder={
@@ -202,16 +196,16 @@ const ChatFooter = () => {
                 </div>
               </ClickAwayListener>
             )}
-
           </div>
         </div>
       </div>
 
-      {/* Send button */}
       <div className="flex-shrink-0">
         <Button
           onClick={handleSend}
-          disabled={!isChatSelected || (!text.trim() && !attachment) || isUploading}
+          disabled={
+            !isChatSelected || (!text.trim() && !attachment) || isUploading
+          }
           className="rounded-full w-10 h-10 sm:w-11 sm:h-11 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm"
           size="icon"
         >

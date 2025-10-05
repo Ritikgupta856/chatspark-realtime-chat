@@ -24,7 +24,10 @@ const Message = ({ message }) => {
   const date = timestamp.toDate();
 
   return (
-    <div className={cn("flex mb-2", self ? "justify-end" : "justify-start")} ref={ref}>
+    <div
+      className={cn("flex mb-2", self ? "justify-end" : "justify-start")}
+      ref={ref}
+    >
       <Card
         className={cn(
           "relative max-w-[75%] rounded-2xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md",

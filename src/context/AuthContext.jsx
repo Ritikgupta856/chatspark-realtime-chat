@@ -43,17 +43,12 @@ export const AuthContextProvider = ({ children }) => {
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
-        // Update online status
         await updateDoc(userDocRef, {
           isOnline: true,
         });
-
-        // Get updated user data
         const userData = userDocSnap.data();
         setCurrentUser(userData);
       } else {
-        // User document doesn't exist yet (might be during registration)
-        console.warn("User document not found for uid:", user.uid);
         setCurrentUser(null);
       }
     } catch (error) {

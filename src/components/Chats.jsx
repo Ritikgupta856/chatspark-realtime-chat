@@ -1,11 +1,6 @@
 import { Button } from "./ui/button";
 import { Plus, Settings, LogOut } from "lucide-react";
-import {
-  Timestamp,
-  collection,
-  doc,
-  onSnapshot,
-} from "firebase/firestore";
+import { Timestamp, collection, doc, onSnapshot } from "firebase/firestore";
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -18,7 +13,6 @@ import { RiSearch2Line } from "react-icons/ri";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { formateDate } from "../helper";
 
-// shadcn components
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -26,13 +20,8 @@ import EditProfile from "./EditProfile";
 import AddUser from "./AddUser";
 
 function Chats() {
-  const {
-    users,
-    setUsers,
-    chats,
-    setChats,
-    setSelectedChat,
-  } = useChatContext();
+  const { users, setUsers, chats, setChats, setSelectedChat } =
+    useChatContext();
   const navigate = useNavigate();
   const { currentUser, signOut } = useContext(AuthContext);
   const { dispatch } = useContext(ChatContext);
@@ -41,7 +30,6 @@ function Chats() {
   const [showAddUser, setShowAddUser] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
 
-  // Fetch users
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
       const updatedUsers = {};
@@ -51,7 +39,6 @@ function Chats() {
     return unsubscribe;
   }, [setUsers]);
 
-  // Fetch chats
   useEffect(() => {
     if (!currentUser?.uid) return;
     const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
@@ -61,13 +48,11 @@ function Chats() {
     return unsub;
   }, [currentUser?.uid, setChats]);
 
-  // Select chat
   const handleSelect = (u, selectedChatId) => {
     dispatch({ type: "CHANGE_USER", payload: u });
     setSelectedChat(true);
   };
 
-  // Filtered chats
   const filteredChats = useMemo(() => {
     return Object.entries(chats || {})
       .filter(
@@ -99,10 +84,11 @@ function Chats() {
 
   return (
     <div className="flex flex-col w-full lg:w-96 h-full border-r border-gray-200 bg-white">
-      {/* Header Section */}
       <div className="flex-shrink-0 px-4 md:px-6 py-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Messages</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            Messages
+          </h1>
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
@@ -134,7 +120,6 @@ function Chats() {
           </div>
         </div>
 
-        {/* Search */}
         <div className="mt-4">
           <div className="relative">
             <RiSearch2Line className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -148,7 +133,6 @@ function Chats() {
         </div>
       </div>
 
-      {/* Chat List */}
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
           <div className="p-2">
@@ -187,7 +171,7 @@ function Chats() {
                             {user?.displayName?.charAt(0)?.toUpperCase() || "U"}
                           </AvatarFallback>
                         </Avatar>
-                        {/* Online indicator */}
+
                         {user && (
                           <span
                             className={cn(
@@ -255,7 +239,6 @@ function Chats() {
         </ScrollArea>
       </div>
 
-      {/* Modals */}
       <AddUser isOpen={showAddUser} onClose={() => setShowAddUser(false)} />
       <EditProfile
         isOpen={showEditProfile}

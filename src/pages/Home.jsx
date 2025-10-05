@@ -1,4 +1,3 @@
-
 import ChatPanel from "../components/ChatPanel";
 import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -7,7 +6,7 @@ import { useChatContext } from "../context/ChatContext";
 import Chats from "@/components/Chats";
 
 function Home() {
-  const { currentUser , isloading } = useContext(AuthContext);
+  const { currentUser, isloading } = useContext(AuthContext);
   const { selectedChat } = useChatContext();
 
   if (isloading || !currentUser) {
@@ -16,19 +15,20 @@ function Home() {
 
   return (
     <div className="flex w-full h-screen max-h-screen overflow-hidden">
-
-      <div className={`${selectedChat ? 'hidden lg:block' : 'block'} w-full lg:w-96 h-full`}>
+      <div
+        className={`${
+          selectedChat ? "hidden lg:block" : "block"
+        } w-full lg:w-96 h-full`}
+      >
         <Chats />
       </div>
 
-     
       {selectedChat && (
         <div className="flex flex-grow h-full">
           <ChatPanel />
         </div>
       )}
 
- 
       {!selectedChat && (
         <div className="hidden lg:flex flex-col justify-center items-center text-center flex-grow h-full p-5">
           <img
@@ -46,6 +46,4 @@ function Home() {
   );
 }
 
-
-
-export default Home
+export default Home;

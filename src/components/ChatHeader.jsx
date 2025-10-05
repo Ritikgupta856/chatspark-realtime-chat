@@ -36,20 +36,21 @@ function ChatHeader() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
 
-        {/* Avatar with online dot below */}
         <div className="relative flex flex-col items-center">
           <Avatar className="h-10 w-10 lg:h-12 lg:w-12">
-            <AvatarImage src={user?.photoURL} alt="avatar" className="object-cover" />
+            <AvatarImage
+              src={user?.photoURL}
+              alt="avatar"
+              className="object-cover"
+            />
             <AvatarFallback
               className="text-white lg:text-lg"
               style={{ backgroundColor: user?.color }}
-     
             >
               {user?.displayName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
 
-          {/* Online/Offline dot below avatar */}
           <span
             className={cn(
               "absolute -bottom-0 right-1 h-2.5 w-2.5 rounded-full border-2 border-white",

@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { X, Camera, Save } from "lucide-react";
-import { toast } from "react-hot-toast"; // or your toast library
+import { Camera, Save } from "lucide-react";
+import { toast } from "react-hot-toast";
 import {
   ref,
   uploadBytesResumable,
@@ -23,7 +23,6 @@ import {
 import { updateProfile } from "firebase/auth";
 import { storage, db, auth } from "@/firebase";
 import { AuthContext } from "@/context/AuthContext";
-import { ChatContext } from "@/context/ChatContext";
 
 const EditProfile = ({ isOpen, onClose }) => {
   const { currentUser, setCurrentUser } = useContext(AuthContext);
@@ -31,7 +30,6 @@ const EditProfile = ({ isOpen, onClose }) => {
   const [name, setName] = useState(currentUser?.displayName || "");
   const [email, setEmail] = useState(currentUser?.email || "");
   const [avatar, setAvatar] = useState(currentUser?.photoURL || "");
-  const { users } = useContext(ChatContext);
   const authUser = auth.currentUser;
 
   const uploadImageToFirestore = (file) => {
@@ -117,7 +115,7 @@ const EditProfile = ({ isOpen, onClose }) => {
         await updateProfile(authUser, { photoURL: value });
       }
 
-      if (type !== "photo") { // Don't show twice for photo uploads
+      if (type !== "photo") { 
         toast.success("Profile updated successfully");
       }
     } catch (error) {
@@ -141,16 +139,9 @@ const EditProfile = ({ isOpen, onClose }) => {
 
   const handleSave = async () => {
     try {
-      // Update name if changed
+
       if (name !== currentUser?.displayName) {
         await handleUpdateProfile("name", name);
-      }
-
-      // Update email if changed (note: this requires re-authentication in Firebase)
-      if (email !== currentUser?.email) {
-        // Email update requires special handling in Firebase Auth
-        console.log("Email update requires re-authentication");
-        toast.info("Email update requires re-authentication");
       }
 
       onClose();
@@ -185,7 +176,7 @@ const EditProfile = ({ isOpen, onClose }) => {
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Avatar Section */}
+
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <Avatar className="h-20 w-20">
@@ -235,8 +226,6 @@ const EditProfile = ({ isOpen, onClose }) => {
               />
             </div>
           </div>
-
-          {/* Action Buttons */}
           <div className="flex gap-2 pt-4">
             <Button
               variant="outline"
@@ -247,7 +236,7 @@ const EditProfile = ({ isOpen, onClose }) => {
             </Button>
             <Button onClick={handleSave} className="flex-1">
               <Save className="h-4 w-4 mr-2" />
-              Save Changes
+              Save
             </Button>
           </div>
         </div>

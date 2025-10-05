@@ -1,4 +1,3 @@
-// AddUser.jsx (UI-only refinements)
 import React, { useState, useContext } from "react";
 import {
   Dialog,
@@ -40,7 +39,6 @@ const SkeletonRow = () => (
 
 const AddUser = ({ isOpen, onClose }) => {
   const { currentUser } = useContext(AuthContext);
-  const { users } = useContext(ChatContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -156,16 +154,13 @@ const AddUser = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
-
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             Add new chat
           </DialogTitle>
         </DialogHeader>
 
-
         <div className="space-y-6 py-4">
-          {/* Search Input */}
           <div className="relative">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70 pointer-events-none transition-opacity"
@@ -183,7 +178,6 @@ const AddUser = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* Search Results */}
           <div className="min-h-[220px] max-h-[340px]">
             {loading ? (
               <div className="space-y-2">
@@ -214,7 +208,9 @@ const AddUser = ({ isOpen, onClose }) => {
                       </Avatar>
 
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{user.displayName}</p>
+                        <p className="font-medium truncate">
+                          {user.displayName}
+                        </p>
                         {user.email && (
                           <p className="text-sm text-muted-foreground truncate">
                             {user.email}
@@ -249,7 +245,6 @@ const AddUser = ({ isOpen, onClose }) => {
                   <UserPlus className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <p className="text-sm">Search for users to start chatting</p>
-
               </div>
             )}
           </div>

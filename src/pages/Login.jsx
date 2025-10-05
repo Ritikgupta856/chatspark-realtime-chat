@@ -9,7 +9,14 @@ import { auth } from "@/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, LogIn, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
@@ -33,19 +40,19 @@ function Login() {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       newErrors.email = "Please enter a valid email";
     }
-    
+
     if (!password) {
       newErrors.password = "Password is required";
     } else if (password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -53,21 +60,20 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       toast.success("Welcome back!");
-      // Navigation will be handled by useEffect when currentUser updates
     } catch (err) {
       console.error("Login error:", err);
       let errorMessage = "Invalid credentials. Please try again.";
-      
+
       switch (err.code) {
         case "auth/user-not-found":
           errorMessage = "No account found with this email";
@@ -78,19 +84,10 @@ function Login() {
         case "auth/invalid-credential":
           errorMessage = "Invalid email or password";
           break;
-        case "auth/user-disabled":
-          errorMessage = "This account has been disabled";
-          break;
-        case "auth/too-many-requests":
-          errorMessage = "Too many failed attempts. Please try again later";
-          break;
-        case "auth/network-request-failed":
-          errorMessage = "Network error. Please check your connection";
-          break;
         default:
           errorMessage = "Failed to sign in. Please try again";
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -102,7 +99,7 @@ function Login() {
       toast.error("Please enter your email address first");
       return;
     }
-    
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       toast.error("Please enter a valid email address");
       return;
@@ -114,7 +111,7 @@ function Login() {
     } catch (error) {
       console.error("Password reset error:", error);
       let errorMessage = "Failed to send reset email";
-      
+
       switch (error.code) {
         case "auth/user-not-found":
           errorMessage = "No account found with this email";
@@ -122,13 +119,10 @@ function Login() {
         case "auth/invalid-email":
           errorMessage = "Invalid email address";
           break;
-        case "auth/too-many-requests":
-          errorMessage = "Too many requests. Please try again later";
-          break;
         default:
           errorMessage = "Something went wrong. Please try again";
       }
-      
+
       toast.error(errorMessage);
     }
   };
@@ -150,9 +144,11 @@ function Login() {
               <LogIn className="w-8 h-8 text-primary-foreground" />
             </div>
           </div>
-          
+
           <div className="space-y-2">
-            <CardTitle className="text-xl lg:text-2xl font-bold">Welcome Back</CardTitle>
+            <CardTitle className="text-xl lg:text-2xl font-bold">
+              Welcome Back
+            </CardTitle>
             <CardDescription className="lg:text-base">
               Sign in to your account to continue chatting
             </CardDescription>
@@ -178,7 +174,9 @@ function Login() {
                       setErrors((prev) => ({ ...prev, email: "" }));
                     }
                   }}
-                  className={`pl-10 placeholder:text-sm ${errors.email ? 'border-destructive' : ''}`}
+                  className={`pl-10 placeholder:text-sm ${
+                    errors.email ? "border-destructive" : ""
+                  }`}
                   disabled={isSubmitting}
                   autoComplete="email"
                 />
@@ -208,7 +206,9 @@ function Login() {
                       setErrors((prev) => ({ ...prev, password: "" }));
                     }
                   }}
-                  className={`pl-10 pr-10 placeholder:text-sm ${errors.password ? 'border-destructive' : ''}`}
+                  className={`pl-10 pr-10 placeholder:text-sm ${
+                    errors.password ? "border-destructive" : ""
+                  }`}
                   disabled={isSubmitting}
                   autoComplete="current-password"
                 />
@@ -247,9 +247,9 @@ function Login() {
               </Button>
             </div>
 
-            <Button 
+            <Button
               type="submit"
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white" 
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white"
               disabled={isSubmitting}
               size="lg"
             >
@@ -272,8 +272,8 @@ function Login() {
           <Separator />
           <p className="text-sm text-center text-muted-foreground">
             Don't have an account?{" "}
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="font-medium text-primary hover:underline transition-colors"
             >
               Create one now

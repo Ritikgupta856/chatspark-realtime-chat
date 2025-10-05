@@ -53,7 +53,6 @@ const Register = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -80,8 +79,6 @@ const Register = () => {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
-    } else if (formData.password.length > 128) {
-      newErrors.password = "Password must be less than 128 characters";
     }
     
     setErrors(newErrors);
@@ -101,19 +98,18 @@ const Register = () => {
     const colorIndex = Math.floor(Math.random() * profileColors.length);
 
     try {
-      // Create user account
+     
       const res = await createUserWithEmailAndPassword(
         auth, 
         email.trim(), 
         password
       );
 
-      // Update profile with display name
       await updateProfile(res.user, { 
         displayName: displayName.trim() 
       });
 
-      // Create user document in Firestore
+ 
       await setDoc(doc(db, "users", res.user.uid), {
         uid: res.user.uid,
         displayName: displayName.trim(),
@@ -123,15 +119,13 @@ const Register = () => {
         createdAt: new Date().toISOString(),
       });
 
-      // Create empty userChats document
+      
       await setDoc(doc(db, "userChats", res.user.uid), {});
 
       toast.success("Success!");
-      
-      // Sign out the user after registration
+   
       await auth.signOut();
       
-      // Navigate to login page
       navigate("/login");
     } catch (err) {
       console.error("Registration error:", err);
@@ -144,15 +138,6 @@ const Register = () => {
           break;
         case "auth/invalid-email":
           errorMessage = "Invalid email address";
-          break;
-        case "auth/operation-not-allowed":
-          errorMessage = "Email/password accounts are not enabled";
-          break;
-        case "auth/weak-password":
-          errorMessage = "Password is too weak. Please use a stronger password";
-          break;
-        case "auth/network-request-failed":
-          errorMessage = "Network error. Please check your connection";
           break;
         default:
           if (err.message) {
